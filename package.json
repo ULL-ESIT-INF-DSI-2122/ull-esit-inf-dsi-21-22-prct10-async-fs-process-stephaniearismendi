@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha",
     "coverage": "nyc npm test && nyc report --reporter=lcov",
-    "start": "tsc-watch --onSuccess \"node dist/index.js\"",
+    "start": "tsc-watch --onSuccess \"node dist/ejercicio-clase/modificacion.js\"",
+    "startejercicio1": "tsc-watch --onSuccess \"node dist/ejercicio-1/index.js\"",
     "doc": "typedoc; touch ./docs/.nojekyll",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
   },
@@ -16,6 +17,7 @@
   "devDependencies": {
     "@types/chai": "^4.2.15",
     "@types/mocha": "^8.2.1",
+    "@types/node": "^17.0.29",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",
     "chai": "^4.3.0",

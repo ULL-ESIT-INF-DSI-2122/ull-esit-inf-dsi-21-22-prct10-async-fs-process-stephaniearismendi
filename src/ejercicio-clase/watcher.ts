@@ -31,12 +31,18 @@ export class Watcher {
    * Método que ejecuta ls -l -h cada vez que el archivo se modifica
    */
   private changeHandler(name:string) {
-    const command:string = this.commands[0];
-    this.commands.splice(1, 0);
-    console.log(this.commands);
-    this.commands.push(name);
+    let command:string = '';
+    let aux:number = 0;
+    if (aux == 0) {
+      command = this.commands[0];
+      this.commands.splice(1, 0);
+      this.commands.push(name);
+      aux++;
+    }
     // const ls = spawn(command, ['-l', '-h', name]);
-    constt ls = spawn(command, commands);
+    console.log('command ' + command);
+    console.log('rest ' + this.commands);
+    const ls = spawn(command, this.commands);
     ls.stdout.on('data', (data) => {
       this.results.push(data.toString());
       console.log(`stdout: ${data}`);
