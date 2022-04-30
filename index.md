@@ -426,7 +426,7 @@ Se hará uso del comando de linux `mv` para mover un directorio a una nueva ruta
 
 Para el funcionamiento general del programa se utilizará `yargs`.
 
-1. Controlador de ``checkIfDirectory``
+- Controlador de ``checkIfDirectory``
 
 ```typescript
 
@@ -450,7 +450,7 @@ yargs.command({
 
 ```
 
-2. Controlador de ``createDirectory``.
+- Controlador de ``createDirectory``.
 
 ```typescript
 
@@ -474,7 +474,7 @@ yargs.command({
 
 ```
 
-3. Controlador de ``listDirectory``
+- Controlador de ``listDirectory``
 
 ```typescript
 
@@ -498,7 +498,7 @@ yargs.command({
 
 ```
 
-4. Controlador de ``showContentFile``
+- Controlador de ``showContentFile``
 
 ```typescript
 
@@ -522,7 +522,7 @@ yargs.command({
 
 ```
 
-6. Controlador de `deleteFileAndDirectory`
+- Controlador de `deleteFileAndDirectory`
 
 ```typescript
 
@@ -546,7 +546,7 @@ yargs.command({
 
 ```
 
-7. Controlador de ``moveAndCopy``.
+- Controlador de ``moveAndCopy``.
 
 ```typescript
 yargs.command({
