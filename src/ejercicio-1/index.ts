@@ -16,7 +16,6 @@ if (process.argv.length !== 3) {
       watcher.on('change', () => {
         console.log(`File ${filename} has been modified somehow`);
       });
-
       console.log(`File ${filename} is no longer watched`);
     }
   });
