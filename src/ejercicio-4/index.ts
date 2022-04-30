@@ -1,6 +1,9 @@
 import {Wrapper} from './wrapper';
 import * as yargs from 'yargs';
 
+/**
+ * Command that lists all the notes of a user
+ */
 yargs.command({
   command: 'type',
   describe: 'checks if a path is a file or a directory',
@@ -19,6 +22,9 @@ yargs.command({
   },
 });
 
+/**
+ * command that creates a directory
+ */
 yargs.command({
   command: 'create-directory',
   describe: 'creates a directory',
@@ -37,6 +43,9 @@ yargs.command({
   },
 });
 
+/**
+ * command that lists all the files of a directory
+ */
 yargs.command({
   command: 'list',
   describe: 'lists the content of a directory',
@@ -55,6 +64,9 @@ yargs.command({
   },
 });
 
+/**
+ * Command that shows the content of a file
+ */
 yargs.command({
   command: 'show',
   describe: 'shows the content of a file',
@@ -73,6 +85,9 @@ yargs.command({
   },
 });
 
+/**
+ * Command that deletes a file or directory
+ */
 yargs.command({
   command: 'remove',
   describe: 'delete a file or a directory',
@@ -91,6 +106,9 @@ yargs.command({
   },
 });
 
+/**
+ * Command that moves a file or directory
+ */
 yargs.command({
   command: 'move',
   describe: 'move a file or a directory to another',
