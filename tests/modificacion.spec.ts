@@ -1,9 +1,9 @@
 import {expect} from 'chai';
 import 'mocha';
-// import {helloWorld} from '../src/ejercicio-clase/modificacion';
+import {checkColor} from '../src/ejercicio-3/notes-app';
 
-// describe('Test clases', () => {
-//   it('Debe existir', () => {
-//     expect(helloWorld()).to.not.throw;
-//   });
-// });
+describe('Test', () => {
+  it('Debe existir', () => {
+    expect(checkColor('red')).to.exist;
+  });
+});

@@ -4,7 +4,7 @@ import chalk from 'chalk';
 
 const nota = new Notes();
 
-function checkColor(color:string):string {
+export function checkColor(color:string):string {
   const _colors: string[] = ['red', 'green', 'blue', 'yellow'];
   let colorFinal:string = '';
   for (let i: number = 0; i < _colors.length; i++) {
