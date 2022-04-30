@@ -1,6 +1,7 @@
 import * as yargs from 'yargs';
 import {Notes} from './notes';
 import chalk from 'chalk';
+import {monitor} from './look-directory';
 
 const nota = new Notes();
 
@@ -186,5 +187,34 @@ yargs.command({
     }
   },
 });
+
+/**
+   * Command to ask for the user name and the directory path to monitor
+   * @param user name of the user
+   * @param path path of the directory
+   */
+yargs.command({
+  command: 'monitor',
+  describe: 'Monitors changes made to the specified directory',
+  builder: {
+    user: {
+      describe: 'User we wants to monitor',
+      demandOption: true,
+      type: 'string',
+    },
+    path: {
+      describe: 'path to the directory we want to monitor',
+      demandOption: true,
+      type: 'string',
+    },
+  },
+  handler(argv) {
+    if (typeof argv.user === 'string' && typeof argv.path === 'string') {
+      console.log(chalk.green(`Monitoring changes in ${argv.path}`));
+      monitor(argv.user, argv.path);
+    }
+  },
+});
+
 
 yargs.parse();
