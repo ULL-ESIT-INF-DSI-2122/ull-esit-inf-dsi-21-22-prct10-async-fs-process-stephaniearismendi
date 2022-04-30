@@ -44,21 +44,7 @@ export class Wrapper {
    * Method that lists the content of a directory
    * @param path path to the file
    */
-  public listDirectory(path:string):void {
-    if (fs.existsSync(path)) {
-      console.log(chalk.green(`Directory ${path} exists. It contains: `));
-      const files = fs.readdirSync(path);
-      if (files.length > 0) {
-        for (const file of files) {
-          console.log(chalk.green(`${file}`));
-        }
-      } else {
-        console.log(chalk.red(`${path} is empty`));
-      }
-    } else {
-      console.log(chalk.red(`Directory ${path} does not exist`));
-    }
-  }
+   listDirectory
   /**
    * Method that shows the content of a file
    * @param path path to the file

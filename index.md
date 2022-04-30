@@ -287,5 +287,139 @@ Se desarrollará una aplicación que permita hacer de wrapper de los distintos c
 - Borrar ficheros y directorios.
 - Mover y copiar ficheros y/o directorios de una ruta a otra. Para este caso, la aplicación recibirá una ruta origen y una ruta destino. En caso de que la ruta origen represente un directorio, se debe copiar dicho directorio y todo su contenido a la ruta destino.
 
+Para ello, crearemos una clase `Wrapper` con un constructor vacío. Luego, los siguientes métodos:
 
+- ``checkIfDirectory()``.
 
+```typescript
+
+  public checkIfDirectory(path:string):boolean {
+    let isDirectory:boolean = false;
+    if (fs.existsSync(path)) {
+      const stats = fs.statSync(path);
+      if (stats.isDirectory()) {
+        isDirectory = true;
+        console.log(chalk.green(`${path} is a directory`));
+      } else if (stats.isFile()) {
+        isDirectory = false;
+        console.log(chalk.green(`${path} is a file`));
+      }
+    } else {
+      console.log(chalk.red(`${path} does not exist`));
+    }
+    return isDirectory;
+  }
+
+```
+
+Comprueba si es un directorio o es un archivo utilizando `fs.statSync`. Devuelve un booleano (true si es un directorio, false en caso contrario) ya que se utilizará en otros métodos.
+
+- `createDirectory()`.
+
+```typescript
+
+  public createDirectory(path:string):void {
+    if (!fs.existsSync(path)) {
+      fs.mkdirSync(path);
+      console.log(chalk.green(`Directory ${path} has been created`));
+    } else {
+      console.log(chalk.red(`Directory ${path} already exists`));
+    }
+  }
+
+```
+
+Recibe una ruta como parámetro y, en caso de que el directorio no exista ya, lo crea. en otro caso muestra un mensaje de error.
+
+- `listDirectory`
+
+```typescript
+
+  public listDirectory(path:string):void {
+    if (fs.existsSync(path)) {
+      console.log(chalk.green(`Directory ${path} exists. It contains: `));
+      const files = fs.readdirSync(path);
+      if (files.length > 0) {
+        for (const file of files) {
+          console.log(chalk.green(`${file}`));
+        }
+      } else {
+        console.log(chalk.red(`${path} is empty`));
+      }
+    } else {
+      console.log(chalk.red(`Directory ${path} does not exist`));
+    }
+  }
+
+```
+
+Si existe un directorio en la ruta pasada como parámetro, se lee todo su contenido. En caso de que no esté vacío, además, se muestran por pantalla todos sus archivos.
+
+- `showContentFile`.
+
+```typescript
+
+  public showContentFile(path:string):void {
+    if (fs.existsSync(path)) {
+      console.log(chalk.green(`File ${path} exists. It contains: `));
+      const content = fs.readFileSync(path, 'utf8');
+      console.log(chalk.green(`${content}`));
+    } else {
+      console.log(chalk.red(`File ${path} does not exist`));
+    }
+  }
+
+```
+
+Si existe el archivo especificado por parámetro se leerá su contenido y se imprimirá por pantalla. En otro caso, se dirá que no existe.
+
+- `deleteFileAndDirectory`.
+
+```typescript
+
+  public deleteFileAndDirectory(path:string) {
+    access(path, constants.F_OK, (err) => {
+      if (err) {
+        console.log(chalk.red(`${path} does not exist`));
+      } else {
+        if (this.checkIfDirectory(path) == true) {
+          fs.rm(path, {recursive: true}, (err) => {
+            if (err) {
+              throw err;
+            } else {
+              console.log(chalk.green(`Directory ${path} has been deleted`));
+            }
+          });
+        } else if (!this.checkIfDirectory(path)) {
+          fs.rmSync(path);
+          console.log(chalk.green(`File ${path} has been deleted`));
+        }
+      }
+    });
+  }
+
+```
+
+En este método se utiliza `checkIfDirectory` para comprobar si es un archivo o un directorio. En cada caso se tratará con una función diferente, eliminándose.
+
+- `moveAndCopy`.
+
+```typescript
+
+  public moveAndCopy(path:string, newPath:string) {
+    if (fs.existsSync(path)) {
+      const mv = spawn('mv', [path, newPath]);
+      mv.stderr.on('data', (data) => {
+        console.log(chalk.red(`${data}`));
+      });
+      mv.on('close', (code) => {
+        console.log(chalk.green(`${path} has been moved to ${newPath}`));
+      });
+    } else {
+      console.log(chalk.red(`${path} does not exist`));
+    }
+  }
+
+```
+
+Se hará uso del comando de linux `mv` para mover un directorio a una nueva ruta especificada. Antes que nada, se comprobará si el directorio a mover existe, y en otro caso se lanza un mensaje informativo.
