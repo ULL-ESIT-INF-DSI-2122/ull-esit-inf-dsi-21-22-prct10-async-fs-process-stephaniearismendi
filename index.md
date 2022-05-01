@@ -312,61 +312,76 @@ Para ello, crearemos una clase `Wrapper` con un constructor vacío. Luego, los s
 
 ```
 
-Comprueba si es un directorio o es un archivo utilizando `fs.statSync`. Devuelve un booleano (true si es un directorio, false en caso contrario) ya que se utilizará en otros métodos.
+Comprueba si es un directorio o es un archivo utilizando `fs.statSync`. Devuelve un booleano (true si es un directorio, false en caso contrario).
 
 - `createDirectory()`.
 
 ```typescript
 
   public createDirectory(path:string):void {
-    if (!fs.existsSync(path)) {
-      fs.mkdirSync(path);
-      console.log(chalk.green(`Directory ${path} has been created`));
-    } else {
-      console.log(chalk.red(`Directory ${path} already exists`));
-    }
+    access(path, constants.F_OK, (err) => {
+      if (err) {
+        const mkdir = spawn('mkdir', ['-p', path]);
+        mkdir.stderr.on('data', (data) => {
+          console.log(chalk.red(`${data}`));
+        });
+        mkdir.on('close', (code) => {
+          if (code === 0) {
+            console.log(chalk.green(`${path} created`));
+          } else {
+            console.log(chalk.red(`${path} could not be created`));
+          }
+        });
+      } else {
+        console.log(chalk.red(`${path} already exists`));
+      }
+    });
   }
+
 
 ```
 
-Recibe una ruta como parámetro y, en caso de que el directorio no exista ya, lo crea. en otro caso muestra un mensaje de error.
+Recibe una ruta como parámetro y, en caso de que el directorio no exista ya, lo crea. en otro caso muestra un mensaje de error. Usa el comando mkdir de linux. 
 
 - `listDirectory`
 
 ```typescript
 
   public listDirectory(path:string):void {
-    if (fs.existsSync(path)) {
-      console.log(chalk.green(`Directory ${path} exists. It contains: `));
-      const files = fs.readdirSync(path);
-      if (files.length > 0) {
-        for (const file of files) {
-          console.log(chalk.green(`${file}`));
-        }
+    access(path, constants.F_OK, (err) => {
+      if (err) {
+        console.log(chalk.red(`${path} does not exist`));
       } else {
-        console.log(chalk.red(`${path} is empty`));
+        console.log(chalk.green(`${path} content: `));
+        const ls = spawn('ls', ['-l', path]);
+        ls.stderr.on('data', (data) => {
+          console.log(chalk.red(`${data}`));
+        });
+        ls.stdout.on('data', (data) => {
+          console.log(chalk.green(`${data}`));
+        });
       }
-    } else {
-      console.log(chalk.red(`Directory ${path} does not exist`));
-    }
+    });
   }
 
 ```
 
-Si existe un directorio en la ruta pasada como parámetro, se lee todo su contenido. En caso de que no esté vacío, además, se muestran por pantalla todos sus archivos.
+Si existe un directorio en la ruta pasada como parámetro, se lee todo su contenido con el comando ls -l
 
 - `showContentFile`.
 
 ```typescript
 
   public showContentFile(path:string):void {
-    if (fs.existsSync(path)) {
-      console.log(chalk.green(`File ${path} exists. It contains: `));
-      const content = fs.readFileSync(path, 'utf8');
-      console.log(chalk.green(`${content}`));
-    } else {
-      console.log(chalk.red(`File ${path} does not exist`));
-    }
+    access(path, constants.F_OK, (err) => {
+      if (err) {
+        console.log(chalk.red(`${path} does not exist`));
+      } else {
+        console.log(chalk.green(`File ${path} exists. It contains: `));
+        const content = fs.readFileSync(path, 'utf8');
+        console.log(chalk.green(`${content}`));
+      }
+    });
   }
 
 ```
@@ -377,30 +392,25 @@ Si existe el archivo especificado por parámetro se leerá su contenido y se imp
 
 ```typescript
 
-  public deleteFileAndDirectory(path:string) {
+  public deleteFileAndDirectory(path:string):void {
     access(path, constants.F_OK, (err) => {
       if (err) {
         console.log(chalk.red(`${path} does not exist`));
       } else {
-        if (this.checkIfDirectory(path) == true) {
-          fs.rm(path, {recursive: true}, (err) => {
-            if (err) {
-              throw err;
-            } else {
-              console.log(chalk.green(`Directory ${path} has been deleted`));
-            }
-          });
-        } else if (!this.checkIfDirectory(path)) {
-          fs.rmSync(path);
-          console.log(chalk.green(`File ${path} has been deleted`));
-        }
+        const rm = spawn('rm', ['-rf', path]);
+        rm.stderr.on('data', (data) => {
+          console.log(chalk.red(`${data}`));
+        });
+        rm.on('close', (code) => {
+          console.log(chalk.green(`${path} has been deleted`));
+        });
       }
     });
   }
 
 ```
 
-En este método se utiliza `checkIfDirectory` para comprobar si es un archivo o un directorio. En cada caso se tratará con una función diferente, eliminándose.
+Se utiliza el comando rm de forma recursiva para eliminar cualquier archivo o directorio, esté o no vacío.
 
 - `moveAndCopy`.
 
