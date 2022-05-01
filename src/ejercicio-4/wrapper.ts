@@ -32,12 +32,23 @@ export class Wrapper {
    * @param path path to the new directory
    */
   public createDirectory(path:string):void {
-    if (!fs.existsSync(path)) {
-      fs.mkdirSync(path);
-      console.log(chalk.green(`Directory ${path} has been created`));
-    } else {
-      console.log(chalk.red(`Directory ${path} already exists`));
-    }
+    access(path, constants.F_OK, (err) => {
+      if (err) {
+        const mkdir = spawn('mkdir', ['-p', path]);
+        mkdir.stderr.on('data', (data) => {
+          console.log(chalk.red(`${data}`));
+        });
+        mkdir.on('close', (code) => {
+          if (code === 0) {
+            console.log(chalk.green(`${path} created`));
+          } else {
+            console.log(chalk.red(`${path} could not be created`));
+          }
+        });
+      } else {
+        console.log(chalk.red(`${path} already exists`));
+      }
+    });
   }
 
   /**
@@ -46,19 +57,20 @@ export class Wrapper {
    */
 
   public listDirectory(path:string):void {
-    if (fs.existsSync(path)) {
-      console.log(chalk.green(`Directory ${path} exists. It contains: `));
-      const files = fs.readdirSync(path);
-      if (files.length > 0) {
-        for (const file of files) {
-          console.log(chalk.green(`${file}`));
-        }
+    access(path, constants.F_OK, (err) => {
+      if (err) {
+        console.log(chalk.red(`${path} does not exist`));
       } else {
-        console.log(chalk.red(`${path} is empty`));
+        console.log(chalk.green(`${path} content: `));
+        const ls = spawn('ls', ['-l', path]);
+        ls.stderr.on('data', (data) => {
+          console.log(chalk.red(`${data}`));
+        });
+        ls.stdout.on('data', (data) => {
+          console.log(chalk.green(`${data}`));
+        });
       }
-    } else {
-      console.log(chalk.red(`Directory ${path} does not exist`));
-    }
+    });
   }
 
   /**
@@ -66,13 +78,15 @@ export class Wrapper {
    * @param path path to the file
    */
   public showContentFile(path:string):void {
-    if (fs.existsSync(path)) {
-      console.log(chalk.green(`File ${path} exists. It contains: `));
-      const content = fs.readFileSync(path, 'utf8');
-      console.log(chalk.green(`${content}`));
-    } else {
-      console.log(chalk.red(`File ${path} does not exist`));
-    }
+    access(path, constants.F_OK, (err) => {
+      if (err) {
+        console.log(chalk.red(`${path} does not exist`));
+      } else {
+        console.log(chalk.green(`File ${path} exists. It contains: `));
+        const content = fs.readFileSync(path, 'utf8');
+        console.log(chalk.green(`${content}`));
+      }
+    });
   }
   /**
    * Method that deletes a file or a directory
@@ -83,18 +97,13 @@ export class Wrapper {
       if (err) {
         console.log(chalk.red(`${path} does not exist`));
       } else {
-        if (this.checkIfDirectory(path) == true) {
-          fs.rm(path, {recursive: true}, (err) => {
-            if (err) {
-              throw err;
-            } else {
-              console.log(chalk.green(`Directory ${path} has been deleted`));
-            }
-          });
-        } else if (!this.checkIfDirectory(path)) {
-          fs.rmSync(path);
-          console.log(chalk.green(`File ${path} has been deleted`));
-        }
+        const rm = spawn('rm', ['-rf', path]);
+        rm.stderr.on('data', (data) => {
+          console.log(chalk.red(`${data}`));
+        });
+        rm.on('close', (code) => {
+          console.log(chalk.green(`${path} has been deleted`));
+        });
       }
     });
   }
@@ -104,16 +113,18 @@ export class Wrapper {
    * @param newPath new path
    */
   public moveAndCopy(path:string, newPath:string):void {
-    if (fs.existsSync(path)) {
-      const mv = spawn('mv', [path, newPath]);
-      mv.stderr.on('data', (data) => {
-        console.log(chalk.red(`${data}`));
-      });
-      mv.on('close', (code) => {
-        console.log(chalk.green(`${path} has been moved to ${newPath}`));
-      });
-    } else {
-      console.log(chalk.red(`${path} does not exist`));
-    }
+    access(path, constants.F_OK, (err) => {
+      if (err) {
+        console.log(chalk.red(`${path} does not exist`));
+      } else {
+        const mv = spawn('mv', [path, newPath]);
+        mv.stderr.on('data', (data) => {
+          console.log(chalk.red(`${data}`));
+        });
+        mv.on('close', (code) => {
+          console.log(chalk.green(`${path} has been moved to ${newPath}`));
+        });
+      }
+    });
   }
 }
