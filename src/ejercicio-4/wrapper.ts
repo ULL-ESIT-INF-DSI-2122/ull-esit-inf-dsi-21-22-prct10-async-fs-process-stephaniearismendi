@@ -44,7 +44,23 @@ export class Wrapper {
    * Method that lists the content of a directory
    * @param path path to the file
    */
-   listDirectory
+
+  public listDirectory(path:string):void {
+    if (fs.existsSync(path)) {
+      console.log(chalk.green(`Directory ${path} exists. It contains: `));
+      const files = fs.readdirSync(path);
+      if (files.length > 0) {
+        for (const file of files) {
+          console.log(chalk.green(`${file}`));
+        }
+      } else {
+        console.log(chalk.red(`${path} is empty`));
+      }
+    } else {
+      console.log(chalk.red(`Directory ${path} does not exist`));
+    }
+  }
+
   /**
    * Method that shows the content of a file
    * @param path path to the file
@@ -62,7 +78,7 @@ export class Wrapper {
    * Method that deletes a file or a directory
    * @param path path to the file
    */
-  public deleteFileAndDirectory(path:string) {
+  public deleteFileAndDirectory(path:string):void {
     access(path, constants.F_OK, (err) => {
       if (err) {
         console.log(chalk.red(`${path} does not exist`));
@@ -87,7 +103,7 @@ export class Wrapper {
    * @param path old path
    * @param newPath new path
    */
-  public moveAndCopy(path:string, newPath:string) {
+  public moveAndCopy(path:string, newPath:string):void {
     if (fs.existsSync(path)) {
       const mv = spawn('mv', [path, newPath]);
       mv.stderr.on('data', (data) => {
