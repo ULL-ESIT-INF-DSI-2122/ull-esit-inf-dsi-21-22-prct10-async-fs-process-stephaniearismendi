@@ -11,6 +11,8 @@
     "startejercicio2": "tsc-watch --onSuccess \"node dist/ejercicio-2/index.js\"",
     "startejercicio3": "tsc-watch --onSuccess \"node dist/ejercicio-3/notes-app.js\"",
     "startejercicio4": "tsc-watch --onSuccess \"node dist/ejercicio-4/index.js\"",
+    "startserver": "tsc-watch --onSuccess \"node dist/modificacion-02-05/server.js\"",
+    "startclient": "tsc-watch --onSuccess \"node dist/modificacion-02-05/client.js\"",
     "doc": "typedoc; touch ./docs/.nojekyll",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
   },
